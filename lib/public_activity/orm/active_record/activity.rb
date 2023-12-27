@@ -39,7 +39,11 @@ module PublicActivity
         # Serialize parameters Hash
         begin
           if table_exists?
-            serialize :parameters, Hash unless %i[json jsonb hstore].include?(columns_hash['parameters'].type)
+            if Rails.version >= '7.1.0'
+              serialize :parameters, type: Hash unless %i[json jsonb hstore].include?(columns_hash['parameters'].type)
+            else
+              serialize :parameters,  Hash unless %i[json jsonb hstore].include?(columns_hash['parameters'].type)
+            end
           else
             warn("[WARN] table #{name} doesn't exist. Skipping PublicActivity::Activity#parameters's serialization")
           end
